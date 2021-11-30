@@ -46,3 +46,8 @@ header h2 {
   color: white;
   cursor: pointer;
 }
+
+img {
+  height: 200px;
+  width: 300px;
+}
