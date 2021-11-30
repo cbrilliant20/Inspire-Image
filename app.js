@@ -3,14 +3,21 @@ const gallery = document.querySelector(".gallery")
 const searchInput = document.querySelector(".search-input")
 const form = document.querySelector(".search-form")
 let searchValue
+const more = document.querySelector(".more")
+let page = 1
+let fetchLink
+let currentSearch
 
 //Event Listeners
 searchInput.addEventListener("input", updateInput)
 
 form.addEventListener("submit", (e) => {
   e.preventDefault()
+  currentSearch = searchValue
   searchPhotos(searchValue)
 })
+
+more.addEventListener("click", loadMore)
 
 function updateInput(e) {
   console.log(e.target.value)
@@ -45,21 +52,32 @@ function generateImages(data) {
 }
 
 async function curatedPhotos() {
-  const data = await fetchApi("https://api.pexels.com/v1/curated?per_page=15")
+  fetchLink = `https://api.pexels.com/v1/curated?page=1&per_page=15`
+  const data = await fetchApi(fetchLink)
   generateImages(data)
 }
 
 async function searchPhotos(query) {
   clear()
-  const data = await fetchApi(
-    `https://api.pexels.com/v1/search?query=${query}&per_page=15`
-  )
+  fetchLink = `https://api.pexels.com/v1/search?page=1&query=${query}&per_page=15`
+  const data = await fetchApi(fetchLink)
   generateImages(data)
 }
 
 function clear() {
   gallery.innerHTML = ""
   searchInput.value = ""
+}
+
+async function loadMore() {
+  page++
+  if (currentSearch) {
+    fetchLink = `https://api.pexels.com/v1/search?page=${page}&query=${currentSearch}&per_page=15`
+  } else {
+    fetchLink = `https://api.pexels.com/v1/curated?page=${page}&per_page=15`
+  }
+  const data = await fetchApi(fetchLink)
+  generateImages(data)
 }
 
 curatedPhotos()
